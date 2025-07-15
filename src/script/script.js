@@ -31,6 +31,7 @@ document.addEventListener("DOMContentLoaded", () => {
             alert("Ainda não possui msg.");
         } else{ 
         adicionarMensagem("enviada", texto);
+        inputMsg.value = "";
 
         //setTimeout -> Executa algo uma única vez, após um intervalo de tempo
         //setInterval -> Executa algo em um intervalo de tempo
@@ -45,30 +46,24 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     
     function adicionarMensagem(tipoMensagem, texto){
-        const mensagemBloco = document.createElement("div");
-        mensagemBloco.classList.add("flex");
-        mensagemBloco.classList.add("flex--direction--row");
-        mensagemBloco.classList.add("width--100");
 
 
         const mensagemElement = document.createElement("div");
-        mensagemElement.classList.add("flex");
-        mensagemElement.classList.add("flex--direction--column");
-        mensagemElement.classList.add("message");
+        mensagemElement.classList.add("message", "fade-in");
 
         if (tipoMensagem === "enviada") {
-            mensagemBloco.classList.add('justify--content--end');
             mensagemElement.classList.add('you');
         } else {
-            mensagemBloco.classList.add('justify--content--start');
             mensagemElement.classList.add("other");
         }
 
         mensagemElement.innerText = texto;
-        
-        mensagemBloco.appendChild(mensagemElement);
 
-        listaMensagens.appendChild(mensagemBloco);
+        listaMensagens.appendChild(mensagemElement);
+        
+        setTimeout(() => {
+            mensagemElement.classList.remove("fade-in");
+        }, 500);
     }
 
     buttonSend.addEventListener("click", () => {
