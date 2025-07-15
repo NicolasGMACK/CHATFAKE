@@ -6,9 +6,9 @@ const listaDeContatos = [
         horario: "20:20",
         avatar: "./src/assets/images/jessica--drew.png",
         conversas: [
-            {mensagem: "a", tipo:"recebida", horario: "20:00"},
-            {mensagem: "a", tipo:"recebida", horario: "20:00"},
-            {mensagem: "a", tipo:"recebida", horario: "20:00"}
+            {mensagem: "a", tipo:"enviada", horario: "20:00"},
+            {mensagem: "b", tipo:"recebida", horario: "20:00"},
+            {mensagem: "c", tipo:"recebida", horario: "20:00"}
         ]
     },
     {
@@ -18,9 +18,9 @@ const listaDeContatos = [
         horario: "20:20",
         avatar: "./src/assets/images/greg--james.png",
         conversas: [
-            {mensagem: "a", tipo:"recebida", horario: "20:00"},
-            {mensagem: "a", tipo:"recebida", horario: "20:00"},
-            {mensagem: "a", tipo:"recebida", horario: "20:00"}
+            {mensagem: "d", tipo:"recebida", horario: "20:00"},
+            {mensagem: "e", tipo:"enviada", horario: "20:00"},
+            {mensagem: "f", tipo:"recebida", horario: "20:00"}
         ]
     },
     {
@@ -30,9 +30,9 @@ const listaDeContatos = [
         horario: "20:20",
         avatar: "./src/assets/images/emily--dorson.png",
         conversas: [
-            {mensagem: "a", tipo:"recebida", horario: "20:00"},
-            {mensagem: "a", tipo:"recebida", horario: "20:00"},
-            {mensagem: "a", tipo:"recebida", horario: "20:00"}
+            {mensagem: "g", tipo:"enviada", horario: "20:00"},
+            {mensagem: "h", tipo:"enviada", horario: "20:00"},
+            {mensagem: "i", tipo:"recebida", horario: "20:00"}
         ]
     },
     {
@@ -42,9 +42,9 @@ const listaDeContatos = [
         horario: "20:20",
         avatar: "./src/assets/images/david--moore.png",
         conversas: [
-            {mensagem: "a", tipo:"recebida", horario: "20:00"},
-            {mensagem: "a", tipo:"recebida", horario: "20:00"},
-            {mensagem: "a", tipo:"recebida", horario: "20:00"}
+            {mensagem: "j", tipo:"enviada", horario: "20:00"},
+            {mensagem: "k", tipo:"enviada", horario: "20:00"},
+            {mensagem: "l", tipo:"recebida", horario: "20:00"}
         ]
     }
 ]
@@ -53,15 +53,15 @@ document.addEventListener("DOMContentLoaded", () => {
     console.log("Minha página carregou");
 
     const inputMsg = document.querySelector('#inputMensagem');
-    console.log(inputMsg);
+    
 
     inputMsg.placeholder = "Digite a sua mensagem!"
 
     const buttons = document.querySelectorAll(".cursor--pointer");
-    console.log(buttons);
+    
 
     const buttonSend = document.querySelector(".cursor--pointer[src*='send']")
-    console.log(buttonSend);
+    
 
     const listaMensagens = document.querySelector(".div--messages");
     console.log(listaMensagens);
@@ -76,46 +76,71 @@ document.addEventListener("DOMContentLoaded", () => {
         "Quer conversar cmg?"
     ];
 
+    function renderizarMsg(tipo, mensagem, horario) {
+            const divMensagem = document.createElement("div");
+            const direcao = tipo === "enviada" ? "end" : "start";
+            const stylesDiv = tipo === "enviada" ? "you" : "other";
+
+            divMensagem.classList.add("flex",
+                 "flex--direction--row", "width--100",
+                  `justify--content--${direcao}`,
+                "fade-in");
+
+            divMensagem.innerHTML = `
+            <div class="flex flex--direction--column message ${stylesDiv}">
+                    <div class="flex--6">
+                        ${mensagem}
+                    </div>
+
+
+                    <div class="flex--1 flex flex--direction--row justify--content--end align--items--center font--size--12 infos--message">
+                        <img src="./src/assets/icons/heart.svg" />
+                        <div>${horario}</div>
+                        <img src="./src/assets/icons/viewed.svg" />
+
+                    </div>
+                    
+                </div>
+                                
+            `
+            return divMensagem;
+        }
+    
+    function carregarMensagemContato(index) {
+        const contato = listaDeContatos[index];
+        listaMensagens.innerHTML = "";
+
+        contato.conversas.forEach((conversa) => {
+            const mensagemRenderizada = renderizarMsg(
+                conversa.tipo,
+                conversa.mensagem,
+                conversa.horario
+            );
+            listaMensagens.appendChild(mensagemRenderizada);
+        })
+    }
+
     function enviarMensagem() {
         const texto = inputMsg.value.trim();
         if(texto === ""){
             alert("Ainda não possui msg.");
         } else{ 
-        adicionarMensagem("enviada", texto);
+        const mensagemRenderizada = renderizarMsg("enviada", texto, "21:00");
+        listaMensagens.appendChild(mensagemRenderizada);
         inputMsg.value = "";
 
         //setTimeout -> Executa algo uma única vez, após um intervalo de tempo
         //setInterval -> Executa algo em um intervalo de tempo
-        setTimeout(respoderMsg, 2000);
+        setTimeout(responderMsg, 2000);
     }
     }
 
-    function respoderMsg() {
+    function responderMsg() {
         const posicao = Math.floor(Math.random() * respostasParaOBot.length);
         const msgDoBOT = respostasParaOBot[posicao];
-        adicionarMensagem("recebida", msgDoBOT);
-    }
-    
-    function adicionarMensagem(tipoMensagem, texto){
-
-
-        const mensagemElement = document.createElement("div");
-        mensagemElement.classList.add("message", "fade-in");
-
-        if (tipoMensagem === "enviada") {
-            mensagemElement.classList.add('you');
-        } else {
-            mensagemElement.classList.add("other");
-        }
-
-        mensagemElement.innerText = texto;
-
-        listaMensagens.appendChild(mensagemElement);
-        
-        setTimeout(() => {
-            mensagemElement.classList.remove("fade-in");
-        }, 500);
-    }
+        const mensagemRenderizada = renderizarMsg("recebida", msgDoBOT, "21:00");
+        listaMensagens.appendChild(mensagemRenderizada);
+    }    
 
     buttonSend.addEventListener("click", () => {
         enviarMensagem();
@@ -126,15 +151,15 @@ document.addEventListener("DOMContentLoaded", () => {
     if (event.key === "Enter") {
             enviarMensagem();
         }
-        })
+        });      
 
 
 function carregarContatos() {
     const divContatosElement = document.querySelector(".div--contacts");
 
     
-    listaDeContatos.forEach((contato) => {
-        console.log(contato);
+    listaDeContatos.forEach((contato, index) => {
+        
         //inner text e o inner html
 
         const divParentElement = document.createElement("div");
@@ -162,6 +187,10 @@ function carregarContatos() {
             </div>
         `;        
         
+        divParentElement.addEventListener("click", () => {
+            carregarMensagemContato(index);
+        });
+
         divContatosElement.appendChild(divParentElement);
     });
 
